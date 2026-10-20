@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ROYCOLLECT</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            color: #172033;
+        }
+
+        header {
+            background: #075e54;
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        header p {
+            margin-bottom: 0;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 25px auto;
+            padding: 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000010;
+        }
+
+        button {
+            background: #087f5b;
+            color: white;
+            padding: 13px 18px;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        input, textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin: 8px 0 15px;
+            border: 1px solid #ccd3dd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #667085;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>ROYCOLLECT</h1>
+    <p>Smart Field Data Collection Platform</p>
+</header>
+
+<main>
+
+    <section class="card">
+        <h2>Welcome to ROYCOLLECT</h2>
+        <p>Collect, manage and organize your field research data.</p>
+        <button onclick="showForm()">Create New Form</button>
+    </section>
+
+    <section id="formSection" class="card hidden">
+        <h2>Create a Questionnaire</h2>
+
+        <label for="formTitle">Questionnaire Title</label>
+        <input id="formTitle" placeholder="Enter questionnaire title">
+
+        <label for="question">First Question</label>
+        <textarea id="question" placeholder="Enter your question"></textarea>
+
+        <button onclick="saveForm()">Save Questionnaire</button>
+    </section>
+
+    <section class="card">
+        <h2>My Questionnaires</h2>
+        <div id="formsList">No questionnaires created yet.</div>
+    </section>
+
+    <section class="card">
+        <h2>Data Collection</h2>
+        <p>Create a questionnaire to begin collecting responses.</p>
+    </section>
+
+</main>
+
+<footer>
+    ROYCOLLECT © 2026
+</footer>
+
+<script>
+    function showForm() {
+        document.getElementById("formSection")
+            .classList.toggle("hidden");
+    }
+
+    function saveForm() {
+        const title = document.getElementById("formTitle")
+            .value.trim();
+
+        const question = document.getElementById("question")
+            .value.trim();
+
+        if (!title || !question) {
+            alert("Please enter a title and a question.");
+            return;
+        }
+
+        const forms = JSON.parse(
+            localStorage.getItem("roycollect_forms") || "[]"
+        );
+
+        forms.push({
+            title: title,
+            question: question,
+            createdAt: new Date().toISOString()
+        });
+
+        localStorage.setItem(
+            "roycollect_forms",
+            JSON.stringify(forms)
+        );
+
+        displayForms();
+
+        document.getElementById("formTitle").value = "";
+        document.getElementById("question").value = "";
+
+        alert("Questionnaire saved on this browser.");
+    }
+
+    function displayForms() {
+        const forms = JSON.parse(
+            localStorage.getItem("roycollect_forms") || "[]"
+        );
+
+        const list = document.getElementById("formsList");
+
+        if (forms.length === 0) {
+            list.textContent = "No questionnaires created yet.";
+            return;
+        }
+
+        list.innerHTML = "";
+
+        forms.forEach(function(form) {
+            const item = document.createElement("div");
+            const heading = document.createElement("h3");
+            const questionText = document.createElement("p");
+
+            heading.textContent = form.title;
+            questionText.textContent = form.question;
+
+            item.appendChild(heading);
+            item.appendChild(questionText);
+            list.appendChild(item);
+        });
+    }
+
+    displayForms();
+</script>
+
+</body>
+</html>
